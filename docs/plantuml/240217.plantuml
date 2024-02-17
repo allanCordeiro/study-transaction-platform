@@ -1,0 +1,52 @@
+@startuml "initial version"
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+title Versão inicial e estrutura de componentes (17/02/2024)
+AddElementTag("worker", $shape=EightSidedShape(), $bgColor="Yellow", $fontColor="Black")
+AddElementTag("storage", $shape=RoundedBoxShape(), $bgColor="Black", $fontColor="white")
+AddElementTag("queue", $bgColor="Red", $fontColor="white")
+
+
+
+Person(customer, "Customer", "Ordinary customer")
+Person(distributor, "Distributor", "A distributor")
+System_Boundary(front-end, "Front-end") {
+    Container(web_app, "Web Application", "Technology TBD", "Allow users to transfer money or check its statment")
+}
+
+System_Boundary(user, "User's Management microservice") {
+    Container(user_server, "Server HTTP", "Golang", "To edit account and authentication")
+    Container(user_cli, "CLI", "Golang", "To create and inactivate customers")
+    ContainerDb(user_db, "Database", "MongoDB", "Transactional database", $tags="storage")
+}
+
+System_Boundary(transaction, "Financial transactions microservice") {
+    Container(transaction_server, "Server HTTP", "Golang", "To fire transactions from customer to customer")
+    ContainerDb(transaction_db, "Database", "MySQL", "Transactional database", $tags="storage")
+    Container(transaction_worker, "Worker", "Golang", "", $tags="worker")
+}
+
+System(rabbit_mq, "RabbitMQ", $tags="queue")
+
+System_Boundary(statement, "Bank statement microservice") {    
+    Container(statement_server, "Server HTTP", "Golang", "To generate bank statments")
+    ContainerDb(statement_db, "Database", "MySQL", "Transactional database", $tags="storage")    
+    Container(statement_worker, "Worker", "Golang", "", $tags="worker")
+}
+
+
+Rel_D(customer, web_app, "Uses", "HTTPS")
+Rel_D(distributor, web_app, "Uses", "HTTPS")
+Rel_L(web_app, user_server, "Uses", "HTTPS")
+Rel_D(user_server, user_db, "Persists data in")
+Rel_D(user_cli, user_db, "Persists data in")
+Rel_D(web_app, transaction_server, "Uses", "HTTPS")
+Rel_D(transaction_server, transaction_worker, "Listens for new transactions")
+Rel_L(transaction_server, transaction_db, "Persists data in")
+Rel_U(transaction_worker, rabbit_mq, "Sends transaction events to")
+Rel_D(web_app, statement_server, "Uses", "HTTPS")
+Rel_D(rabbit_mq, statement_worker, "Listens for new messages")
+Rel_D(statement_server, statement_db, "Consults data in")
+Rel_L(statement_worker, statement_db, "Persists data in")
+
+@enduml
