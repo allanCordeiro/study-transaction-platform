@@ -21,7 +21,7 @@ Via de regra existem dois perfis de usuário.
 ### Operações
 #### Server
 O server estará habilitado para cumprir as seguintes operações:
- - Alterar dados do usuário (exceto seu tipo)
+ - Alterar dados do usuário (exceto seu tipo e email, que é chave primario)
  - Realizar autenticação
 
 Todo o processo será disponibilizado via API HTTP
