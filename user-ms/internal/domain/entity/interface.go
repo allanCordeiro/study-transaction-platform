@@ -1,9 +1,10 @@
 package entity
 
+import "context"
+
 type UserInterface interface {
-	Save(user *User) error
-	FindByMail(email string) (*User, error)
-	FindByID(id string) (*User, error)
-	Update(user *User) (*User, error)
-	Delete(user *User) error
+	Save(ctx context.Context, user *User) error
+	FindByMail(ctx context.Context, email string) (*User, error)
+	FindByID(ctx context.Context, id string) (*User, error)
+	Update(ctx context.Context, user *User) (*User, error)
 }
