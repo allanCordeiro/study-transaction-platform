@@ -11,7 +11,7 @@ import (
 )
 
 type userEntity struct {
-	//objectId  primitive.ObjectID `bson:"_id"`
+	//_id       primitive.ObjectID `bson:"_id"`
 	id        string    `bson:"id"`
 	name      string    `bson:"name"`
 	email     string    `bson:"email"`
@@ -54,7 +54,7 @@ func (u *UserDB) Save(ctx context.Context, user *entity.User) error {
 func (u *UserDB) FindByMail(ctx context.Context, email string) (*entity.User, error) {
 	filter := bson.D{{Key: "email", Value: email}}
 	var retrievedUser userEntity
-	err := u.Coll.FindOne(ctx, filter).Decode(retrievedUser)
+	err := u.Coll.FindOne(ctx, filter).Decode(&retrievedUser)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, entity.ErrUserNotFound
@@ -65,7 +65,7 @@ func (u *UserDB) FindByMail(ctx context.Context, email string) (*entity.User, er
 	user := &entity.User{
 		Id:        retrievedUser.id,
 		Name:      retrievedUser.name,
-		Email:     *userMail,
+		Email:     userMail,
 		UserType:  entity.UserType(retrievedUser.userType),
 		Password:  retrievedUser.password,
 		CreatedAt: retrievedUser.createdAt,
@@ -77,9 +77,9 @@ func (u *UserDB) FindByMail(ctx context.Context, email string) (*entity.User, er
 }
 
 func (u *UserDB) FindByID(ctx context.Context, id string) (*entity.User, error) {
-	filter := bson.D{{Key: "id", Value: id}}
+	filter := bson.M{"id": id}
 	var retrievedUser userEntity
-	err := u.Coll.FindOne(ctx, filter).Decode(retrievedUser)
+	err := u.Coll.FindOne(ctx, filter).Decode(&retrievedUser)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, entity.ErrUserNotFound
@@ -90,7 +90,7 @@ func (u *UserDB) FindByID(ctx context.Context, id string) (*entity.User, error) 
 	user := &entity.User{
 		Id:        retrievedUser.id,
 		Name:      retrievedUser.name,
-		Email:     *userMail,
+		Email:     userMail,
 		UserType:  entity.UserType(retrievedUser.userType),
 		Password:  retrievedUser.password,
 		CreatedAt: retrievedUser.createdAt,

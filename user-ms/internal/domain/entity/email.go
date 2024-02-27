@@ -8,13 +8,13 @@ type Email struct {
 	value string
 }
 
-func NewEmail(email string) (*Email, error) {
+func NewEmail(email string) (Email, error) {
 	mailAddress := Email{value: email}
 	err := mailAddress.validate()
 	if err != nil {
-		return nil, err
+		return Email{}, err
 	}
-	return &mailAddress, nil
+	return mailAddress, nil
 
 }
 

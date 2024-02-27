@@ -11,7 +11,7 @@ type DatabaseMock struct {
 	mock.Mock
 }
 
-func NewDabtaseMock() *DatabaseMock {
+func NewDatabaseMock() *DatabaseMock {
 	return &DatabaseMock{}
 }
 
