@@ -113,13 +113,14 @@ func (u *UserDB) Update(ctx context.Context, user *entity.User) (*entity.User, e
 
 	result, err := u.DB.Collection("user").UpdateOne(ctx, filter, update)
 	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, entity.ErrUserNotFound
-		}
 		return nil, err
 	}
 
-	if result.ModifiedCount < 1 {
+	if result.MatchedCount == 0 {
+		return nil, entity.ErrUserNotFound
+	}
+
+	if result.ModifiedCount == 0 {
 		return nil, entity.ErrUserNotChanged
 	}
 	return user, nil
