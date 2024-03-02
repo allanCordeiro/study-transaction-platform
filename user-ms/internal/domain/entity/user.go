@@ -10,7 +10,7 @@ import (
 type User struct {
 	Id        string
 	Name      string
-	Email     Email
+	Email     *Email
 	UserType  UserType
 	Password  string
 	CreatedAt time.Time
@@ -33,7 +33,7 @@ func NewUser(name string, email string, userType string, password string) (*User
 	user := &User{
 		Id:        uuid.New().String(),
 		Name:      name,
-		Email:     emailEntity,
+		Email:     &emailEntity,
 		Password:  password,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

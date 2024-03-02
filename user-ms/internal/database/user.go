@@ -11,39 +11,38 @@ import (
 )
 
 type userEntity struct {
-	//_id       primitive.ObjectID `bson:"_id"`
-	id        string    `bson:"id"`
-	name      string    `bson:"name"`
-	email     string    `bson:"email"`
-	userType  uint8     `bson:"user_type"`
-	password  string    `bson:"password"`
-	createdAt time.Time `bson:"created_at"`
-	updatedAt time.Time `bson:"updated_at"`
-	deletedAt time.Time `bson:"deleted_at"`
-	isActive  bool      `bson:"is_active"`
+	Id        string    `bson:"id"`
+	Name      string    `bson:"name"`
+	Email     string    `bson:"email"`
+	UserType  uint8     `bson:"user_type"`
+	Password  string    `bson:"password"`
+	CreatedAt time.Time `bson:"created_at"`
+	UpdatedAt time.Time `bson:"updated_at"`
+	DeletedAt time.Time `bson:"deleted_at"`
+	IsActive  bool      `bson:"is_active"`
 }
 
 type UserDB struct {
-	Coll *mongo.Collection
+	DB *mongo.Database
 }
 
-func NewUserDB(coll *mongo.Collection) *UserDB {
-	return &UserDB{Coll: coll}
+func NewUserDB(db *mongo.Database) *UserDB {
+	return &UserDB{DB: db}
 }
 
 func (u *UserDB) Save(ctx context.Context, user *entity.User) error {
 	newUser := userEntity{
-		id:        user.Id,
-		name:      user.Name,
-		email:     user.Email.GetEmail(),
-		userType:  user.UserType.EnumIndex(),
-		password:  user.Password,
-		createdAt: user.CreatedAt,
-		updatedAt: user.UpdatedAt,
-		deletedAt: user.DeletedAt,
+		Id:        user.Id,
+		Name:      user.Name,
+		Email:     user.Email.GetEmail(),
+		UserType:  user.UserType.EnumIndex(),
+		Password:  user.Password,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		DeletedAt: user.DeletedAt,
 	}
 
-	_, err := u.Coll.InsertOne(ctx, newUser)
+	_, err := u.DB.Collection("user").InsertOne(ctx, newUser)
 	if err != nil {
 		return err
 	}
@@ -54,24 +53,24 @@ func (u *UserDB) Save(ctx context.Context, user *entity.User) error {
 func (u *UserDB) FindByMail(ctx context.Context, email string) (*entity.User, error) {
 	filter := bson.D{{Key: "email", Value: email}}
 	var retrievedUser userEntity
-	err := u.Coll.FindOne(ctx, filter).Decode(&retrievedUser)
+	err := u.DB.Collection("user").FindOne(ctx, filter).Decode(&retrievedUser)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, entity.ErrUserNotFound
 		}
 		return nil, err
 	}
-	userMail, _ := entity.NewEmail(retrievedUser.email)
+	userMail, _ := entity.NewEmail(retrievedUser.Email)
 	user := &entity.User{
-		Id:        retrievedUser.id,
-		Name:      retrievedUser.name,
-		Email:     userMail,
-		UserType:  entity.UserType(retrievedUser.userType),
-		Password:  retrievedUser.password,
-		CreatedAt: retrievedUser.createdAt,
-		UpdatedAt: retrievedUser.updatedAt,
-		DeletedAt: retrievedUser.deletedAt,
-		IsActive:  retrievedUser.isActive,
+		Id:        retrievedUser.Id,
+		Name:      retrievedUser.Name,
+		Email:     &userMail,
+		UserType:  entity.UserType(retrievedUser.UserType),
+		Password:  retrievedUser.Password,
+		CreatedAt: retrievedUser.CreatedAt,
+		UpdatedAt: retrievedUser.UpdatedAt,
+		DeletedAt: retrievedUser.DeletedAt,
+		IsActive:  retrievedUser.IsActive,
 	}
 	return user, nil
 }
@@ -79,24 +78,24 @@ func (u *UserDB) FindByMail(ctx context.Context, email string) (*entity.User, er
 func (u *UserDB) FindByID(ctx context.Context, id string) (*entity.User, error) {
 	filter := bson.M{"id": id}
 	var retrievedUser userEntity
-	err := u.Coll.FindOne(ctx, filter).Decode(&retrievedUser)
+	err := u.DB.Collection("user").FindOne(ctx, filter).Decode(&retrievedUser)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, entity.ErrUserNotFound
 		}
 		return nil, err
 	}
-	userMail, _ := entity.NewEmail(retrievedUser.email)
+	userMail, _ := entity.NewEmail(retrievedUser.Email)
 	user := &entity.User{
-		Id:        retrievedUser.id,
-		Name:      retrievedUser.name,
-		Email:     userMail,
-		UserType:  entity.UserType(retrievedUser.userType),
-		Password:  retrievedUser.password,
-		CreatedAt: retrievedUser.createdAt,
-		UpdatedAt: retrievedUser.updatedAt,
-		DeletedAt: retrievedUser.deletedAt,
-		IsActive:  retrievedUser.isActive,
+		Id:        retrievedUser.Id,
+		Name:      retrievedUser.Name,
+		Email:     &userMail,
+		UserType:  entity.UserType(retrievedUser.UserType),
+		Password:  retrievedUser.Password,
+		CreatedAt: retrievedUser.CreatedAt,
+		UpdatedAt: retrievedUser.UpdatedAt,
+		DeletedAt: retrievedUser.DeletedAt,
+		IsActive:  retrievedUser.IsActive,
 	}
 	return user, nil
 }
@@ -112,7 +111,7 @@ func (u *UserDB) Update(ctx context.Context, user *entity.User) (*entity.User, e
 		{Key: "is_active", Value: user.IsActive},
 	}}}
 
-	result, err := u.Coll.UpdateOne(ctx, filter, update)
+	result, err := u.DB.Collection("user").UpdateOne(ctx, filter, update)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, entity.ErrUserNotFound
