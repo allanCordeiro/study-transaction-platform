@@ -148,7 +148,7 @@ func TestUpdateUser(t *testing.T) {
 		expectedPassword := "123456"
 		expectedType := entity.Customer
 		db := NewUserDB(mt.DB)
-		user, _ := entity.NewUser("Joe Doe", expectedEmail, expectedType.String(), "123")
+		user, _ := entity.NewUser("Joe Doe", expectedEmail, expectedType.String(), "123456")
 		user.Activate()
 
 		time.Sleep(time.Second * 1)
@@ -175,24 +175,11 @@ func TestUpdateUser(t *testing.T) {
 		assert.Equal(t, expectedName, updatedUser.Name)
 		assert.Equal(t, expectedEmail, updatedUser.Email.GetEmail())
 		assert.True(t, user.IsPasswordValid(expectedPassword))
-		assert.Equal(t, expectedType, updatedUser.UserType.String())
+		assert.Equal(t, expectedType.String(), updatedUser.UserType.String())
 		assert.NotNil(t, updatedUser.CreatedAt)
 		assert.Zero(t, updatedUser.DeletedAt)
 		assert.True(t, updatedUser.IsActive)
 		assert.True(t, updatedUser.CreatedAt.Before(updatedUser.UpdatedAt))
 	})
 
-	// mt.Run("given a nonexistent user email when find should return error user not found", func(mt *mtest.T) {
-	// 	db := NewUserDB(mt.DB)
-	// 	aRandomUserEmail := "this_is_not_john_doe@email.com"
-	// 	expectedErr := entity.ErrUserNotFound
-	// 	//no primitive data on purpose as we're testing an user not found scenario
-	// 	noneUserBatch := mtest.CreateCursorResponse(0, "test.user", mtest.FirstBatch)
-
-	// 	mt.AddMockResponses(noneUserBatch)
-
-	// 	_, err := db.FindByID(context.Background(), aRandomUserEmail)
-	// 	assert.NotNil(t, err)
-	// 	assert.Equal(t, expectedErr, err)
-	// })
 }

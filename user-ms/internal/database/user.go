@@ -8,6 +8,7 @@ import (
 	"github.com/AllanCordeiro/study-transaction-platform/user-ms/internal/domain/entity"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type userEntity struct {
@@ -111,17 +112,29 @@ func (u *UserDB) Update(ctx context.Context, user *entity.User) (*entity.User, e
 		{Key: "is_active", Value: user.IsActive},
 	}}}
 
-	result, err := u.DB.Collection("user").UpdateOne(ctx, filter, update)
+	var updatedUser userEntity
+
+	err := u.DB.Collection("user").FindOneAndUpdate(
+		ctx,
+		filter,
+		update,
+		options.FindOneAndUpdate().SetReturnDocument(1),
+	).Decode(&updatedUser)
+
 	if err != nil {
 		return nil, err
 	}
 
-	if result.MatchedCount == 0 {
-		return nil, entity.ErrUserNotFound
-	}
+	mail, _ := entity.NewEmail(updatedUser.Email)
+	return &entity.User{
+		Id:        updatedUser.Id,
+		Name:      updatedUser.Name,
+		Email:     &mail,
+		UserType:  entity.UserType(updatedUser.UserType),
+		CreatedAt: updatedUser.CreatedAt,
+		UpdatedAt: updatedUser.UpdatedAt,
+		DeletedAt: updatedUser.DeletedAt,
+		IsActive:  updatedUser.IsActive,
+	}, nil
 
-	if result.ModifiedCount == 0 {
-		return nil, entity.ErrUserNotChanged
-	}
-	return user, nil
 }
