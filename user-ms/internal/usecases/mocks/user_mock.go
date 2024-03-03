@@ -22,14 +22,14 @@ func (m *DatabaseMock) Save(ctx context.Context, user *entity.User) error {
 
 func (m *DatabaseMock) FindByMail(ctx context.Context, email string) (*entity.User, error) {
 	args := m.Called(ctx, email)
-	return args.Get(0).(*entity.User), args.Error(0)
+	return args.Get(0).(*entity.User), args.Error(1)
 }
 
 func (m *DatabaseMock) FindByID(ctx context.Context, id string) (*entity.User, error) {
 	args := m.Called(ctx, id)
-	return args.Get(0).(*entity.User), args.Error(0)
+	return args.Get(0).(*entity.User), args.Error(1)
 }
 func (m *DatabaseMock) Update(ctx context.Context, user *entity.User) (*entity.User, error) {
 	args := m.Called(ctx, user)
-	return args.Get(0).(*entity.User), args.Error(0)
+	return args.Get(0).(*entity.User), args.Error(1)
 }

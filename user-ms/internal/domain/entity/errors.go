@@ -3,7 +3,7 @@ package entity
 import "errors"
 
 var (
-	ErrInvalidEmail       = errors.New("email invalido")
+	ErrInvalidEmail       = errors.New("invalid email")
 	ErrPasswordTooLong    = errors.New("password is too long")
 	ErrInvalidUserProfile = errors.New("invalid user profile")
 	ErrUserNotFound       = errors.New("user not found")
