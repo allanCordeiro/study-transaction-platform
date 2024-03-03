@@ -101,3 +101,19 @@ func TestDeactivateUser(t *testing.T) {
 	assert.False(t, user.IsActive)
 	assert.NotZero(t, user.DeletedAt)
 }
+
+func TestChangePassword(t *testing.T) {
+	userName := "Allan Cordeiro"
+	email := "allan@email.com"
+	password := "123456"
+	userType := "customer"
+	expectedPassword := "nova_senha"
+
+	user, err := NewUser(userName, email, userType, password)
+	assert.Nil(t, err)
+	user.Activate()
+	user.NewPassword(expectedPassword)
+
+	assert.True(t, user.IsPasswordValid(expectedPassword))
+
+}
