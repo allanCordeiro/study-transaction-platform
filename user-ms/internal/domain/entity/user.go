@@ -83,6 +83,10 @@ func (u *User) Deactivate() {
 	u.DeletedAt = time.Now()
 }
 
+func (u *User) NewPassword(password string) {
+	u.Password = hashPassword(password)
+}
+
 func hashPassword(password string) string {
 	//the only exception that this method should throw is whether password is greater than 72 bytes
 	//we'll already validating it before
