@@ -6,26 +6,27 @@ import (
 	"github.com/AllanCordeiro/study-transaction-platform/user-ms/internal/domain/entity"
 )
 
-type DeleteUserUseCase struct {
+type ReactivateUserUseCase struct {
 	Gateway entity.UserInterface
 }
 
-type DeleteUserInput struct {
+type ReactivateUserInput struct {
 	UserId string
 }
 
-func NewDeleteUserUseCase(gateway entity.UserInterface) *DeleteUserUseCase {
-	return &DeleteUserUseCase{Gateway: gateway}
+func NewReactivateUserUseCase(gateway entity.UserInterface) *ReactivateUserUseCase {
+	return &ReactivateUserUseCase{Gateway: gateway}
 }
 
-func (d *DeleteUserUseCase) Execute(ctx context.Context, input DeleteUserInput) error {
+func (d *ReactivateUserUseCase) Execute(ctx context.Context, input ReactivateUserInput) error {
 	user, err := d.Gateway.FindByID(ctx, input.UserId)
 	if err != nil {
 		return err
 	}
 	if user.IsActive {
-		user.Deactivate()
+		return entity.ErrUserAlreadyActivated
 	}
+	user.Activate()
 
 	_, err = d.Gateway.Update(ctx, user)
 	if err != nil {
