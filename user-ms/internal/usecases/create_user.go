@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/AllanCordeiro/study-transaction-platform/user-ms/internal/domain/entity"
 )
@@ -32,6 +33,7 @@ func (c *CreateUserUseCase) Execute(ctx context.Context, input CreateUserInput) 
 	}
 
 	user.Activate()
+	fmt.Println(user.IsActive)
 
 	err = c.Gateway.Save(ctx, user)
 	if err != nil {

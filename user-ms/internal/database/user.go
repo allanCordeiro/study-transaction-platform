@@ -41,6 +41,7 @@ func (u *UserDB) Save(ctx context.Context, user *entity.User) error {
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 		DeletedAt: user.DeletedAt,
+		IsActive:  user.IsActive,
 	}
 
 	_, err := u.DB.Collection("user").InsertOne(ctx, newUser)
