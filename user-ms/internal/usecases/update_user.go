@@ -15,6 +15,7 @@ type UpdateUserUseCaseInput struct {
 	Name     string
 	Password string
 	UserType string
+	IsActive bool
 }
 
 func NewUpdateUserUseCase(gateway entity.UserInterface) *UpdateUserUseCase {
@@ -29,6 +30,12 @@ func (u *UpdateUserUseCase) Execute(ctx context.Context, input UpdateUserUseCase
 	user.Name = input.Name
 	user.NewPassword(input.Password)
 	user.SetProfile(input.UserType)
+	if input.IsActive {
+		user.Activate()
+	} else {
+		user.Deactivate()
+	}
+
 	_, err = u.Gateway.Update(ctx, user)
 	if err != nil {
 		return err

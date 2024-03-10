@@ -34,12 +34,18 @@ func runReactivateUser() RunEFunc {
 		}
 
 		reactivate := usecases.NewUpdateUserUseCase(userDb)
-		//err = reactivate.Execute(ctx, usecases.DeleteUserInput{UserId: user.UserId})
+		err = reactivate.Execute(ctx, usecases.UpdateUserUseCaseInput{
+			UserId:   user.UserId,
+			Name:     user.Name,
+			Password: user.Password,
+			UserType: user.UserType,
+			IsActive: true,
+		})
 		if err != nil {
 			return err
 		}
 
-		fmt.Println("user deactivated")
+		fmt.Println("user has been activated")
 		return nil
 	}
 }

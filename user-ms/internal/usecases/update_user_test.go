@@ -23,6 +23,7 @@ func TestUpdateUser(t *testing.T) {
 			UserId:   user.Id,
 			Name:     expectedName,
 			UserType: expectedUserType,
+			IsActive: true,
 		}
 		gateway := mocks.NewDatabaseMock()
 		gateway.On("FindByID", mock.Anything, mock.Anything).Return(user, nil)
