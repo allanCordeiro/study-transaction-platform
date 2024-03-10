@@ -13,15 +13,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// deactivateCmd represents the deactivate command
-var deactivateCmd = &cobra.Command{
-	Use:   "deactivate",
-	Short: "Deactive user account",
-	Long:  "Deactive user account",
-	RunE:  runDeactivateUser(),
+// reactivateCmd represents the reactivate command
+var reactivateCmd = &cobra.Command{
+	Use:   "reactivate",
+	Short: "Reactivate user account",
+	Long:  "Reactivate user account",
+	RunE:  runReactivateUser(),
 }
 
-func runDeactivateUser() RunEFunc {
+func runReactivateUser() RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
@@ -33,8 +33,8 @@ func runDeactivateUser() RunEFunc {
 			return err
 		}
 
-		deactivate := usecases.NewDeleteUserUseCase(userDb)
-		err = deactivate.Execute(ctx, usecases.DeleteUserInput{UserId: user.UserId})
+		reactivate := usecases.NewUpdateUserUseCase(userDb)
+		//err = reactivate.Execute(ctx, usecases.DeleteUserInput{UserId: user.UserId})
 		if err != nil {
 			return err
 		}
@@ -45,9 +45,9 @@ func runDeactivateUser() RunEFunc {
 }
 
 func init() {
-	userCmd.AddCommand(deactivateCmd)
+	userCmd.AddCommand(reactivateCmd)
 
-	deactivateCmd.Flags().StringVarP(&email, "email", "e", "", "User's email address")
-	deactivateCmd.Flags().StringVarP(&userId, "id", "i", "", "User's id")
-	deactivateCmd.MarkFlagsOneRequired("email", "id")
+	reactivateCmd.Flags().StringVarP(&email, "email", "e", "", "User's email address")
+	reactivateCmd.Flags().StringVarP(&userId, "id", "i", "", "User's id")
+	reactivateCmd.MarkFlagsOneRequired("email", "id")
 }
