@@ -23,6 +23,9 @@ var deactivateCmd = &cobra.Command{
 
 func runDeactivateUser() RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
+		if userId == "" {
+
+		}
 		userDb := database.NewUserDB(Db)
 		deactivate := usecases.NewDeleteUserUseCase(userDb)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
