@@ -14,7 +14,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var Db *mongo.Database
+var (
+	Db       *mongo.Database
+	userId   string
+	name     string
+	email    string
+	userType string
+	password string
+)
 
 // userCmd represents the user command
 var userCmd = &cobra.Command{

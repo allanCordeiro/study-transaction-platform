@@ -15,13 +15,6 @@ import (
 
 type RunEFunc func(cmd *cobra.Command, args []string) error
 
-var (
-	name     string
-	email    string
-	userType string
-	password string
-)
-
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
