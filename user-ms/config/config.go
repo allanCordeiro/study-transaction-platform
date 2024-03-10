@@ -1,20 +1,18 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 )
 
 type conf struct {
-	DbDriver     string `mapstructure:"database.mongodb"`
-	DbHost       string `mapstructure:"database.mongodb.host"`
-	DbPort       string `mapstructure:"database.mongodb.port"`
-	DbName       string `mapstructure:"database.mongodb.database"`
-	DbUser       string `mapstructure:"database.mongodb.user"`
-	DbPassword   string `mapstructure:"database.mongodb.password"`
-	DbUseSSL     string `mapstructure:"database.mongodb.ssl"`
-	DbAuthSource string `mapstructure:"database.mongodb.authsource"`
+	DbDriver     string `mapstructure:"driver"`
+	DbHost       string `mapstructure:"host"`
+	DbPort       string `mapstructure:"port"`
+	DbName       string `mapstructure:"database"`
+	DbUser       string `mapstructure:"user"`
+	DbPassword   string `mapstructure:"password"`
+	DbUseSSL     bool   `mapstructure:"ssl"`
+	DbAuthSource string `mapstructure:"authSource"`
 }
 
 func LoadConfig(path string, filename string) (*conf, error) {
@@ -28,11 +26,10 @@ func LoadConfig(path string, filename string) (*conf, error) {
 		return nil, err
 	}
 
-	err = viper.Unmarshal(&config)
+	err = viper.UnmarshalKey("database", &config)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(config.DbHost)
 
 	return &config, nil
 }

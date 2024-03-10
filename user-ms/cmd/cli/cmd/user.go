@@ -31,11 +31,11 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(config.DbHost)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	uri := fmt.Sprintf("%s://%s:%s@%s:%s/%s?ssl=%s&authSource=%s",
+	uri := fmt.Sprintf("%s://%s:%s@%s:%s/%s?ssl=%t&authSource=%s",
 		config.DbDriver,
 		config.DbUser,
 		config.DbPassword,
@@ -48,14 +48,12 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	defer Db.Client().Disconnect(ctx)
+	//defer Db.Client().Disconnect(ctx)
 
 	rootCmd.AddCommand(userCmd)
 }
 
 func GetDatabase(ctx context.Context, dbUri string) (*mongo.Database, error) {
-	fmt.Println(dbUri)
-	//mongoURI := "mongodb://root:root@localhost:27017/teste?ssl=false&authSource=admin"
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbUri))
 	if err != nil {
 		return nil, err

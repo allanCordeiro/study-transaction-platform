@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/AllanCordeiro/study-transaction-platform/user-ms/internal/database"
 	"github.com/AllanCordeiro/study-transaction-platform/user-ms/internal/usecases"
@@ -32,7 +34,10 @@ func runCreateUser() RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 		userDb := database.NewUserDB(Db)
 		create := usecases.NewCreateUserUseCase(userDb)
-		_, err := create.Execute(context.TODO(), usecases.CreateUserInput{
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+		defer cancel()
+
+		output, err := create.Execute(ctx, usecases.CreateUserInput{
 			Name:     name,
 			Email:    email,
 			Password: password,
@@ -42,6 +47,7 @@ func runCreateUser() RunEFunc {
 			return err
 		}
 
+		fmt.Println("user created: " + output.UserId)
 		return nil
 	}
 }
