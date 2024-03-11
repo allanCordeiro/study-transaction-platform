@@ -1,0 +1,10 @@
+database:
+  driver: mongodb
+  host: localhost
+  port: 27017
+  database: user
+  user: root
+  password: root
+  ssl: false
+  authSource: admin
+    
