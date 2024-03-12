@@ -22,7 +22,7 @@ var updateCmd = &cobra.Command{
 
 func runUpdateUser() RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		userDb := database.NewUserDB(Db)
+		userDb := database.NewUserDB(Db, "user")
 		update := usecases.NewUpdateUserUseCase(userDb)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()

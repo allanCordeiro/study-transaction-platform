@@ -16,7 +16,7 @@ func TestCreateUser(t *testing.T) {
 	mt := mtest.New(t, mtest.NewOptions().ClientType(mtest.Mock))
 
 	mt.Run("given a valid user when call save should return ok", func(mt *mtest.T) {
-		db := NewUserDB(mt.DB)
+		db := NewUserDB(mt.DB, "user")
 		mt.AddMockResponses(mtest.CreateSuccessResponse())
 
 		expectedEmail := "j.doe@test.com"
@@ -40,7 +40,7 @@ func TestFindUserByID(t *testing.T) {
 		expectedName := "John Doe"
 		expectedPassword := "123456"
 		expectedType := entity.Customer
-		db := NewUserDB(mt.DB)
+		db := NewUserDB(mt.DB, "user")
 
 		firstUserBatch := mtest.CreateCursorResponse(1, "test.user", mtest.FirstBatch,
 			bson.D{
@@ -71,7 +71,7 @@ func TestFindUserByID(t *testing.T) {
 	})
 
 	mt.Run("given a nonexistent user when find should return error user not found", func(mt *mtest.T) {
-		db := NewUserDB(mt.DB)
+		db := NewUserDB(mt.DB, "user")
 		aRandomUserId := "1ccb2e7e-400c-4cdb-85d6-8b3f3311b34a"
 		expectedErr := entity.ErrUserNotFound
 		//no primitive data on purpose as we're testing an user not found scenario
@@ -94,7 +94,7 @@ func TestFindUserByEmail(t *testing.T) {
 		expectedName := "John Doe"
 		expectedPassword := "123456"
 		expectedType := entity.Customer
-		db := NewUserDB(mt.DB)
+		db := NewUserDB(mt.DB, "user")
 
 		firstUserBatch := mtest.CreateCursorResponse(1, "test.user", mtest.FirstBatch,
 			bson.D{
@@ -125,7 +125,7 @@ func TestFindUserByEmail(t *testing.T) {
 	})
 
 	mt.Run("given a nonexistent user email when find should return error user not found", func(mt *mtest.T) {
-		db := NewUserDB(mt.DB)
+		db := NewUserDB(mt.DB, "user")
 		aRandomUserEmail := "this_is_not_john_doe@email.com"
 		expectedErr := entity.ErrUserNotFound
 		//no primitive data on purpose as we're testing an user not found scenario
@@ -147,7 +147,7 @@ func TestUpdateUser(t *testing.T) {
 		expectedName := "John Doe"
 		expectedPassword := "123456"
 		expectedType := entity.Customer
-		db := NewUserDB(mt.DB)
+		db := NewUserDB(mt.DB, "user")
 		user, _ := entity.NewUser("Joe Doe", expectedEmail, expectedType.String(), "123456")
 		user.Activate()
 

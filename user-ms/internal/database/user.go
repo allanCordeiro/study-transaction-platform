@@ -24,11 +24,12 @@ type userEntity struct {
 }
 
 type UserDB struct {
-	DB *mongo.Database
+	DB             *mongo.Database
+	CollectionName string
 }
 
-func NewUserDB(db *mongo.Database) *UserDB {
-	return &UserDB{DB: db}
+func NewUserDB(db *mongo.Database, collection string) *UserDB {
+	return &UserDB{DB: db, CollectionName: collection}
 }
 
 func (u *UserDB) Save(ctx context.Context, user *entity.User) error {
@@ -44,7 +45,7 @@ func (u *UserDB) Save(ctx context.Context, user *entity.User) error {
 		IsActive:  user.IsActive,
 	}
 
-	_, err := u.DB.Collection("user").InsertOne(ctx, newUser)
+	_, err := u.DB.Collection(u.CollectionName).InsertOne(ctx, newUser)
 	if err != nil {
 		return err
 	}
@@ -55,7 +56,7 @@ func (u *UserDB) Save(ctx context.Context, user *entity.User) error {
 func (u *UserDB) FindByMail(ctx context.Context, email string) (*entity.User, error) {
 	filter := bson.D{{Key: "email", Value: email}}
 	var retrievedUser userEntity
-	err := u.DB.Collection("user").FindOne(ctx, filter).Decode(&retrievedUser)
+	err := u.DB.Collection(u.CollectionName).FindOne(ctx, filter).Decode(&retrievedUser)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, entity.ErrUserNotFound
@@ -80,7 +81,7 @@ func (u *UserDB) FindByMail(ctx context.Context, email string) (*entity.User, er
 func (u *UserDB) FindByID(ctx context.Context, id string) (*entity.User, error) {
 	filter := bson.M{"id": id}
 	var retrievedUser userEntity
-	err := u.DB.Collection("user").FindOne(ctx, filter).Decode(&retrievedUser)
+	err := u.DB.Collection(u.CollectionName).FindOne(ctx, filter).Decode(&retrievedUser)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, entity.ErrUserNotFound
@@ -115,7 +116,7 @@ func (u *UserDB) Update(ctx context.Context, user *entity.User) (*entity.User, e
 
 	var updatedUser userEntity
 
-	err := u.DB.Collection("user").FindOneAndUpdate(
+	err := u.DB.Collection(u.CollectionName).FindOneAndUpdate(
 		ctx,
 		filter,
 		update,

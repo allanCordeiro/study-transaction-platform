@@ -26,7 +26,7 @@ func runReactivateUser() RunEFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
 
-		userDb := database.NewUserDB(Db)
+		userDb := database.NewUserDB(Db, "user")
 		find := usecases.NewFindUserUseCase(userDb)
 		user, err := find.Execute(ctx, usecases.FindUserInput{Id: userId, Email: email})
 		if err != nil {

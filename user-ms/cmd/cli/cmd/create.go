@@ -25,7 +25,7 @@ var createCmd = &cobra.Command{
 
 func runCreateUser() RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		userDb := database.NewUserDB(Db)
+		userDb := database.NewUserDB(Db, "user")
 		create := usecases.NewCreateUserUseCase(userDb)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 		defer cancel()
