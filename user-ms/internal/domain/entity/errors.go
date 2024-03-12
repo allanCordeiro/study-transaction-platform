@@ -10,4 +10,5 @@ var (
 	ErrUserNotFound         = errors.New("user not found")
 	ErrUserNotChanged       = errors.New("changes were not effective")
 	ErrUserAlreadyActivated = errors.New("user is already activated")
+	ErrUserAlreadyExists    = errors.New("user already exists")
 )

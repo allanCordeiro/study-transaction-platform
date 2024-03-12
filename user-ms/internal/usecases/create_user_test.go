@@ -23,6 +23,7 @@ func TestValidCreateUserUseCase(t *testing.T) {
 			UserType: expectedUserType,
 		}
 		gateway := mocks.NewDatabaseMock()
+		gateway.On("FindByMail", mock.Anything, mock.Anything).Return(&entity.User{}, entity.ErrUserNotFound)
 		gateway.On("Save", mock.Anything, mock.Anything).Return(nil)
 
 		uc := NewCreateUserUseCase(gateway)
@@ -30,6 +31,31 @@ func TestValidCreateUserUseCase(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.NotNil(t, output)
+	})
+}
+
+func TestCreateDuplicatedUserUseCase(t *testing.T) {
+	t.Run("given a valid user when try to create but the user already exists should thrown an error", func(t *testing.T) {
+		expectedName := "John Doe"
+		expectedEmail := "j.doe@test.com"
+		expectedPassword := "123456"
+		expectedUserType := "customer"
+		expectedUser := &CreateUserInput{
+			Name:     expectedName,
+			Email:    expectedEmail,
+			Password: expectedPassword,
+			UserType: expectedUserType,
+		}
+		gateway := mocks.NewDatabaseMock()
+		gateway.On("FindByMail", mock.Anything, mock.Anything).Return(&entity.User{}, nil)
+		gateway.On("Save", mock.Anything, mock.Anything).Return(nil)
+
+		uc := NewCreateUserUseCase(gateway)
+		output, err := uc.Execute(context.TODO(), *expectedUser)
+
+		assert.NotNil(t, err)
+		assert.Equal(t, entity.ErrUserAlreadyExists, err)
+		assert.Nil(t, output)
 	})
 }
 
@@ -64,6 +90,7 @@ func TestInvalidCreateUserUseCase(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			gateway := mocks.NewDatabaseMock()
+			gateway.On("FindByMail", mock.Anything, mock.Anything).Return(&entity.User{}, entity.ErrUserNotFound)
 			gateway.On("Save", mock.Anything).Return(test.expectedErr)
 			uc := NewCreateUserUseCase(gateway)
 			_, err := uc.Execute(context.TODO(), test.scenario)

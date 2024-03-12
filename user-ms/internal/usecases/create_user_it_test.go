@@ -52,4 +52,27 @@ func TestCreateUser(t *testing.T) {
 		assert.Equal(t, expectedIsActive, foundUser.IsActive)
 
 	})
+
+	t.Run("given a distributor when create user usecase should return ok", func(t *testing.T) {
+		expectedName := "John Doe"
+		expectedEmail := "j.doe.distributor@test.com"
+		expectedType := "distributor"
+		expectedPassword := "1233456"
+		expectedIsActive := true
+		newUser, err := entity.NewUser(expectedName, expectedEmail, expectedType, expectedPassword)
+
+		assert.Nil(t, err)
+		newUser.Activate()
+		err = userDb.Save(context.TODO(), newUser)
+		assert.Nil(t, err)
+
+		foundUser, err := userDb.FindByID(context.TODO(), newUser.Id)
+		assert.Nil(t, err)
+		assert.Equal(t, expectedName, foundUser.Name)
+		assert.Equal(t, expectedEmail, foundUser.Email.GetEmail())
+		assert.Equal(t, expectedType, foundUser.UserType.String())
+		assert.True(t, foundUser.IsPasswordValid(expectedPassword))
+		assert.Equal(t, expectedIsActive, foundUser.IsActive)
+
+	})
 }

@@ -26,6 +26,11 @@ func NewCreateUserUseCase(gateway entity.UserInterface) *CreateUserUseCase {
 }
 
 func (c *CreateUserUseCase) Execute(ctx context.Context, input CreateUserInput) (*CreateUserOutput, error) {
+	_, err := c.Gateway.FindByMail(ctx, input.Email)
+	if err == nil {
+		return nil, entity.ErrUserAlreadyExists
+	}
+
 	user, err := entity.NewUser(input.Name, input.Email, input.UserType, input.Password)
 	if err != nil {
 		return nil, err
