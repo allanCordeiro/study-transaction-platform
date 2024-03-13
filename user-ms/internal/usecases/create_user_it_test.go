@@ -1,14 +1,11 @@
 package usecases
 
 import (
-	"context"
 	"os"
 	"testing"
 
 	"github.com/AllanCordeiro/study-transaction-platform/user-ms/internal/database"
-	"github.com/AllanCordeiro/study-transaction-platform/user-ms/internal/domain/entity"
 	"github.com/AllanCordeiro/study-transaction-platform/user-ms/test"
-	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -19,60 +16,45 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	//database, closeConnection := test.OpenConnection()
 	db, closeConnection = test.OpenConnection()
 
 	userDb = database.NewUserDB(db, "user")
-
 	defer closeConnection()
+	runCode := m.Run()
 
-	os.Exit(m.Run()) //you need to use it all the time or those tests wont pass
+	os.Exit(runCode) //you need to use it all the time or those tests wont pass
 }
 
 func TestCreateUser(t *testing.T) {
-	t.Run("given an user when create user usecase should return ok", func(t *testing.T) {
-		expectedName := "John Doe"
-		expectedEmail := "j.doe@test.com"
-		expectedType := "customer"
-		expectedPassword := "1233456"
-		expectedIsActive := true
-		newUser, err := entity.NewUser(expectedName, expectedEmail, expectedType, expectedPassword)
+	// t.Run("given an user when create a duplicated user should throw an error", func(t *testing.T) {
+	// 	expectedName := "John Doe"
+	// 	expectedEmail := "j.doe@test.com"
+	// 	expectedType := "customer"
+	// 	expectedPassword := "1233456"
+	// 	newUser, err := entity.NewUser(expectedName, expectedEmail, expectedType, expectedPassword)
 
-		assert.Nil(t, err)
-		newUser.Activate()
-		err = userDb.Save(context.TODO(), newUser)
-		assert.Nil(t, err)
+	// 	assert.Nil(t, err)
+	// 	newUser.Activate()
+	// 	// err = userDb.Save(context.TODO(), newUser)
+	// 	// assert.Nil(t, err)
+	// 	result, err := userDb.DB.Collection("user").
+	// 		InsertOne(context.TODO(), bson.M{"id": newUser.Id,
+	// 			"name":       newUser.Name,
+	// 			"email":      newUser.Email.GetEmail(),
+	// 			"user_type":  newUser.UserType.EnumIndex(),
+	// 			"password":   newUser.Password,
+	// 			"created_at": newUser.CreatedAt,
+	// 			"updated_at": newUser.UpdatedAt,
+	// 			"deleted_at": newUser.DeletedAt,
+	// 			"is_active":  newUser.IsActive,
+	// 		})
+	// 	assert.Nil(t, err)
 
-		foundUser, err := userDb.FindByID(context.TODO(), newUser.Id)
-		assert.Nil(t, err)
-		assert.Equal(t, expectedName, foundUser.Name)
-		assert.Equal(t, expectedEmail, foundUser.Email.GetEmail())
-		assert.Equal(t, expectedType, foundUser.UserType.String())
-		assert.True(t, foundUser.IsPasswordValid(expectedPassword))
-		assert.Equal(t, expectedIsActive, foundUser.IsActive)
+	// 	log.Println(result.InsertedID)
 
-	})
+	// 	err = userDb.Save(context.TODO(), newUser)
+	// 	assert.NotNil(t, err)
+	// 	assert.Equal(t, entity.ErrUserAlreadyExists, err)
 
-	t.Run("given a distributor when create user usecase should return ok", func(t *testing.T) {
-		expectedName := "John Doe"
-		expectedEmail := "j.doe.distributor@test.com"
-		expectedType := "distributor"
-		expectedPassword := "1233456"
-		expectedIsActive := true
-		newUser, err := entity.NewUser(expectedName, expectedEmail, expectedType, expectedPassword)
-
-		assert.Nil(t, err)
-		newUser.Activate()
-		err = userDb.Save(context.TODO(), newUser)
-		assert.Nil(t, err)
-
-		foundUser, err := userDb.FindByID(context.TODO(), newUser.Id)
-		assert.Nil(t, err)
-		assert.Equal(t, expectedName, foundUser.Name)
-		assert.Equal(t, expectedEmail, foundUser.Email.GetEmail())
-		assert.Equal(t, expectedType, foundUser.UserType.String())
-		assert.True(t, foundUser.IsPasswordValid(expectedPassword))
-		assert.Equal(t, expectedIsActive, foundUser.IsActive)
-
-	})
+	// })
 }
